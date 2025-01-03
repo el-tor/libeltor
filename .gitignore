@@ -3,3 +3,5 @@ Cargo.lock
 *.swp
 
 .cargo/bin
+
+.DS_Store

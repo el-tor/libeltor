@@ -5,3 +5,5 @@ members = [
     "libtor-derive",
     "example",
 ]
+
+default-members = ["libtor"]

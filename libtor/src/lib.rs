@@ -46,11 +46,14 @@ pub mod hs;
 pub mod log;
 /// ControlPort and SocksPort related flags
 pub mod ports;
+pub mod circuits;
 
 pub use crate::hs::*;
 pub use crate::log::*;
 pub use crate::ports::*;
 use crate::utils::*;
+
+pub use circuits::get_circuits;
 
 trait Expand: std::fmt::Debug {
     fn expand(&self) -> Vec<String>;

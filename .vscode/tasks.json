@@ -1,0 +1,51 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "cargo build",
+            "type": "shell",
+            "command": "cargo",
+            "args": [
+                "build",
+                "-vv",
+                "--features=vendored-openssl"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": [
+                "$rustc"
+            ],
+            "detail": "Generated task for 'cargo build'"
+        },
+        {
+            "label": "cargo build example",
+            "type": "shell",
+            "command": "cargo",
+            "args": [
+                "build",
+                "-vv",
+                "--features=vendored-openssl"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}/example"
+            },
+            "problemMatcher": [
+                "$rustc"
+            ],
+            "detail": "Generated task for 'cargo build' in the example directory"
+        },
+        {
+            "label": "build all",
+            "dependsOn": [
+                "cargo build",
+                "cargo build example"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        }
+    ]
+}
