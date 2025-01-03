@@ -2,7 +2,23 @@ use std::error::Error;
 use tokio::io::{AsyncBufReadExt, AsyncWriteExt, BufReader};
 use tokio::net::TcpStream;
 
-pub async fn get_circuits(addr: &str, password: &str) -> Result<String, Box<dyn Error>> {
+#[derive(Debug)]
+pub struct Relay {
+    fingerprint: String,
+    name: String,
+}
+
+#[derive(Debug)]
+pub struct Circuit {
+    id: u32,
+    status: String,
+    relays: Vec<Relay>,
+    build_flags: String,
+    purpose: String,
+    time_created: String,
+}
+
+pub async fn get_circuits(addr: &str, password: &str) -> Result<Vec<Circuit>, Box<dyn Error>> {
     println!("Connecting to Tor control port...");
     let stream = TcpStream::connect(addr).await?;
     let (reader, mut writer) = tokio::io::split(stream);
@@ -36,9 +52,60 @@ pub async fn get_circuits(addr: &str, password: &str) -> Result<String, Box<dyn 
                 break;
             }
         }
-        return Ok(circuits_info);
+
+        // Parse the response into Circuit objects
+        let circuits = parse_circuits(&circuits_info)?;
+        return Ok(circuits);
     }
 
     println!("Failed to get response.");
     Err("Failed to get response".into())
+}
+
+fn parse_circuits(circuits_info: &str) -> Result<Vec<Circuit>, Box<dyn Error>> {
+    let mut circuits = Vec::new();
+
+    for line in circuits_info.lines() {
+        let parts: Vec<&str> = line.split_whitespace().collect();
+        if parts.len() < 6 {
+            continue;
+        }
+
+        let id = parts[0].parse::<u32>()?;
+        let status = parts[1].to_string();
+        let path = parts[2..parts.len() - 3].join(" ");
+        let build_flags = parts[parts.len() - 3].replace("BUILD_FLAGS=", "");
+        let purpose = parts[parts.len() - 2].replace("PURPOSE=", "");
+        let time_created = parts[parts.len() - 1].replace("TIME_CREATED=", "");
+
+        let relays = parse_path(&path);
+
+        circuits.push(Circuit {
+            id,
+            status,
+            relays,
+            build_flags,
+            purpose,
+            time_created,
+        });
+    }
+
+    Ok(circuits)
+}
+
+fn parse_path(path: &str) -> Vec<Relay> {
+    path.split(',')
+        .filter_map(|pair| {
+            let parts: Vec<&str> = pair.split('~').collect();
+            if parts.len() == 2 {
+                let fingerprint = parts[0].trim_start_matches('$').to_string();
+                Some(Relay {
+                    fingerprint,
+                    name: parts[1].to_string(),
+                })
+            } else {
+                None
+            }
+        })
+        .collect()
 }

@@ -40,20 +40,20 @@ use log_crate::{debug, error, info, trace};
 
 #[macro_use]
 mod utils;
+pub mod circuits;
 /// Hidden services related flags
 pub mod hs;
 /// Log related flags
 pub mod log;
 /// ControlPort and SocksPort related flags
 pub mod ports;
-pub mod circuits;
 
 pub use crate::hs::*;
 pub use crate::log::*;
 pub use crate::ports::*;
 use crate::utils::*;
 
-pub use circuits::get_circuits;
+pub use circuits::{get_circuits, Circuit};
 
 trait Expand: std::fmt::Debug {
     fn expand(&self) -> Vec<String>;
@@ -397,6 +397,39 @@ impl Tor {
     pub fn start_background(&self) -> JoinHandle<Result<u8, Error>> {
         let cloned = self.clone();
         thread::spawn(move || cloned.start())
+    }
+
+    pub fn get_flags(&self) -> &Vec<TorFlag> {
+        &self.flags
+    }
+
+    pub fn get_control_port(&self) -> Option<u16> {
+        self.flags.iter().find_map(|flag| {
+            if let TorFlag::ControlPort(port) = flag {
+                Some(*port)
+            } else {
+                None
+            }
+        })
+    }
+
+    pub async fn get_circuits(&self, control_password: &str) -> Result<Vec<Circuit>, Error> {
+        if let Some(control_port) = self.get_control_port() {
+            let addr: String = format!("127.0.0.1:{}", control_port);
+
+            match get_circuits(&addr, control_password).await {
+                Ok(circuits) => {
+                    println!("Circuits: {:?}", circuits);
+                    Ok(circuits)
+                } 
+                Err(e) => {
+                    println!("Error: {:?}", e);
+                    Err(Error::NotRunning)
+                }
+            }
+        } else {
+            Err(Error::NotRunning)
+        }
     }
 }
 
