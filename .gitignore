@@ -5,3 +5,5 @@ Cargo.lock
 .cargo/bin
 
 .DS_Store
+
+*tmp

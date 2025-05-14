@@ -1,8 +1,6 @@
-# cargo clean
-cargo build -vv --features=vendored-openssl
 
 cd example
-# cargo clean
+cargo clean
 cargo build -vv --features=vendored-openssl
 cargo run --bin eltor -vv --features=vendored-openssl
 # cargo run --bin getCircuits -vv --features=vendored-openssl
