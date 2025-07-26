@@ -5,8 +5,8 @@ edition = "2021"
 
 [dependencies]
 libtor = { path = "../libtor" }
-libtor-sys = { git = "https://github.com/el-tor/libeltor-sys", branch = "master", version = "47.13.0+0.4.7.x"}
-# libtor-sys = { path = "../../libeltor-sys"  }
+# libtor-sys = { git = "https://github.com/el-tor/libeltor-sys", branch = "master"}
+libtor-sys = { path = "../../libeltor-sys"  }
 # libtor-sys = "^47.13"
 tokio = { version = "1", features = ["full"] }
 tokio-tungstenite = "0.15"

@@ -3,7 +3,7 @@
 members = [
     "libtor",
     "libtor-derive",
-    "example",
+    # "example",
 ]
 
 default-members = ["libtor"]
