@@ -43,3 +43,4 @@ The following dependencies are needed:
 - `pkg-config`
 - `file`
 - the "usual" C build tools: a compiler, `automake`, `autoconf`
+
