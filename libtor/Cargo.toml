@@ -12,7 +12,7 @@ readme = "README.md"
 edition = "2021"
 
 [dependencies]
-libtor-sys = { git = "https://github.com/el-tor/libeltor-sys", branch = "master" }
+libtor-sys = { git = "https://github.com/el-tor/libeltor-sys", rev = "51a7309db639ae64d6ec899ac09f0e08a1c4f5ad" }
 # libtor-sys = { path = "../../libeltor-sys"  }
 # libtor-sys = "^47.13"
 libtor-derive = "^0.1.2"
